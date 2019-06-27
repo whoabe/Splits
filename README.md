@@ -1,0 +1,2 @@
+# Splits
+Bill splitting application
