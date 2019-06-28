@@ -105,4 +105,6 @@ venv.bak/
 # mypy
 .mypy_cache/
 
+postman.jpg
+ocrspacetest.py
 credentials.json
