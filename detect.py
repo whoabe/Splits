@@ -51,4 +51,4 @@ def detect_text(path):
 
         print('bounds: {}'.format(','.join(vertices)))
 
-print(detect_text('/Users/whoabe/Splits/receipt6.jpg'))
+print(detect_text('./receipt6.jpg'))
