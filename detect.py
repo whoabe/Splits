@@ -30,9 +30,11 @@ import numpy as np
 # for label in labels:
 #     print(label.description)
 
-# 
 
-coords=[] 
+#coords will be a dictionary with bounding box coordinates as key
+#values will be the OCR text
+coords={}
+
 def detect_text(path):
     """Detects text in the file."""
     from google.cloud import vision
@@ -53,35 +55,38 @@ def detect_text(path):
 
         vertices = (['({},{})'.format(vertex.x, vertex.y)
                     for vertex in text.bounding_poly.vertices])
-
-        for vertex in text.bounding_poly.vertices:
-            coords.append(tuple((vertex.x , vertex.y)))
         # coords='bounds: {}'.format(','.join(vertices))
-    print(coords)
+
+        #turns all coords into a tuple and puts them into a list
+        # for vertex in text.bounding_poly.vertices:
+        #     coords.append(tuple((vertex.x , vertex.y)))
+            
+        #takes coords of top left and bottom right, then put them in the tuple
+        topleft = tuple((text.bounding_poly.vertices[0].x, text.bounding_poly.vertices[0].y))
+        bottomright = tuple((text.bounding_poly.vertices[2].x, text.bounding_poly.vertices[2].y))
+        box = tuple((topleft,bottomright))
+
+        #only allowing boxes with less than 50 characters
+        #arbitrarily decided that if a box contained more than 50 chars, it is the whole image.
+        if len(text.description) > 50:
+            coords[box] = "imagebox"
+        else:
+            coords[box] = text.description
 
 detect_text('./receipt6.jpg')
-
-for i in range(0,4):
-    coords.pop(0)
-    # remove the first bounding box which is the bounding box for the entire image
-
 image = cv2.imread('./receipt6.jpg')
+
+#made a copy of the original image in case anything else needs to be done with it
 original_image = image
-# keeping original image as original_image just in case we want to use it later
 
+#annotates image with rectangles. to access the text value, text=coords[coord]
 for coord in coords:
-    topleft = coords[0]
-    bottomright = coords[2]
-    coords.pop(0)
-    coords.pop(0)
-    coords.pop(0)
-    coords.pop(0)
-    if (coords[0][0] > 300 & coords[0][0] < 500):  
-        cv2.rectangle(image, topleft, bottomright, (0,255,0), 3)
-        # input coords must be integers
+    topleft = coord[0]
+    bottomright = coord[1]
+    # text = coords[coord]
+    cv2.rectangle(image, topleft, bottomright, (0,255,0), 3)
 
-# for coord in coords:
-#     cv2.circle(image,coord, 5, (0,0,255), -1)
+print(coords)
 
 cv2.imshow('Red dots', image)
 cv2.waitKey(0)
