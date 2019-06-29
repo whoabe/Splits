@@ -73,8 +73,8 @@ def detect_text(path):
         else:
             coords[box] = text.description
 
-detect_text('./receipt6.jpg')
-image = cv2.imread('./receipt6.jpg')
+detect_text('./Receipt Images/receipt6.jpg')
+image = cv2.imread('./Receipt Images/receipt6.jpg')
 
 #made a copy of the original image in case anything else needs to be done with it
 original_image = image
