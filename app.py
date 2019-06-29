@@ -1,7 +1,8 @@
 import os
 import config
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request,flash
 from models.base_model import db
+from user import User
 
 web_dir = os.path.join(os.path.dirname(
     os.path.abspath(__file__)), 'splits_web')
@@ -29,19 +30,38 @@ def _db_close(exc):
 '''shows the form to upload receipt image'''
 @app.route('/upload', methods=["GET"])
 def upload_form():
-    return render_template('users/user_edit.html')
+    return render_template('upload_image.html')
     # render some html page
 
 '''uploads receipt image to amazon? s3? google?'''
 @app.route("/", methods=["POST"])
 def upload_file():
+    try:
+        file = request.files.get("user_file")
+        s3.upload_fileobj(
+            file,
+            os.environ.get('S3_BUCKET'),
+            file.filename,
+            ExtraArgs={
+                "ACL": "public-read",
+                "ContentType": file.content_type
+            }
+    )
+    user = User.get_or_none(User.id==current_user.id)
+    user.image = f"http://{os.environ.get('S3_BUCKET')}.s3.amazonaws.com/{file.filename}"
+    user.save()
+    return redirect(url_for('upload_form'))
+
+    except Exception as e:
+        print("Something Happened: ", e)
+        return "Something went wrong"
 
 	# A 
     #  We check the request.files object for a user_file key. (user_file is the name of the file input on our form). If it’s not there, we return an error message.
-
     if "user_file" not in request.files:
         flash("No file in request.files")
-        return render_template('users/user_edit.html')
+        return render_template('users/upload_image.html')
+
 
 	# B
     # If the key is in the object, we save it in a variable called file.
