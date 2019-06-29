@@ -63,9 +63,12 @@ detect_text('./receipt6.jpg')
 
 for i in range(0,4):
     coords.pop(0)
+    # remove the first bounding box which is the bounding box for the entire image
 
 image = cv2.imread('./receipt6.jpg')
 original_image = image
+# keeping original image as original_image just in case we want to use it later
+
 for coord in coords:
     topleft = coords[0]
     bottomright = coords[2]
@@ -75,6 +78,7 @@ for coord in coords:
     coords.pop(0)
     if (coords[0][0] > 300 & coords[0][0] < 500):  
         cv2.rectangle(image, topleft, bottomright, (0,255,0), 3)
+        # input coords must be integers
 
 # for coord in coords:
 #     cv2.circle(image,coord, 5, (0,0,255), -1)
