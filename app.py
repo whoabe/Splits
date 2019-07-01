@@ -1,7 +1,15 @@
 import os
-import config
-from flask import Flask, render_template, request
+from config import Config
+from flask import Flask, render_template, request, flash
 from models.base_model import db
+from google.cloud import vision
+import io
+import cv2
+import numpy as np
+from models.receipt import Receipt
+from models.receipt_details import Receipt_details
+from werkzeug.utils import secure_filename
+from helpers import upload_file_to_s3
 
 web_dir = os.path.join(os.path.dirname(
     os.path.abspath(__file__)), 'splits_web')
@@ -29,7 +37,7 @@ def _db_close(exc):
 '''shows the form to upload receipt image'''
 @app.route('/upload', methods=["GET"])
 def upload_form():
-    return render_template('users/user_edit.html')
+    return render_template('home.html')
     # render some html page
 
 '''uploads receipt image to amazon? s3? google?'''
@@ -41,7 +49,7 @@ def upload_file():
 
     if "user_file" not in request.files:
         flash("No file in request.files")
-        return render_template('users/user_edit.html')
+        return render_template('home.html')
 
 	# B
     # If the key is in the object, we save it in a variable called file.
@@ -61,7 +69,7 @@ def upload_file():
     # We check the filename attribute on the object and if it’s empty, it means the user sumbmitted an empty form, so we return an error message.
     if file.filename == "":
         flash("Please select a file")
-        return render_template('users/user_edit.html', user = current_user)
+        return render_template('home.html')
 
 	# D.
     # Finally we check that there is a file and that it has an allowed filetype (this is what the allowed_file function does, you can check it out in the flask docs).
@@ -71,16 +79,54 @@ def upload_file():
         # secure_filename = Pass it a filename and it will return a secure version of it. This filename can then safely be stored on a regular file system and passed to os.path.join(). The filename returned is an ASCII only string for maximum portability.
         # output = upload_file_to_s3(file, Config.S3_BUCKET)
         upload_file_to_s3(file, Config.S3_BUCKET)
-        user = current_user
-        user.profile_image = str(current_user.id) + "-" + file.filename
-        if user.save():
-            flash("profile image updated")
-            return render_template('users/user_edit.html', user = current_user)
-        # return str(output)
+        # user = current_user
+
+        instance = Receipt(receipt_image = file.filename)
+        
+        if instance.save():
+            flash("Receipt uploaded")
+            return render_template('home.html')
+            # have it render out somewhere else
 
 
     else:
         flash('wrong content type')
-        return render_template('users/user_edit.html', user = current_user)
+        return render_template('home.html')
+        # have it render out somewhere else
 
-'''need another view function that sends the image to google vision AI has method=POST'''
+
+'''send image url to google vision AI and then put the text location and text in a database'''
+@app.route("/", methods=["POST"])
+def detect_text_uri(receipt_image_url):
+    #setting coords as a dictionary
+    #need to pass in receipt_image_url for uri
+ 
+    client = vision.ImageAnnotatorClient()
+    image = vision.types.Image()
+    image.source.image_uri = receipt_image_url
+    #need to define the url in above line
+
+    response = client.text_detection(image=image)
+    texts = response.text_annotations
+
+    for text in texts:
+        Receipt_details.text = text.description
+        #receipt_text is going to the database
+        # print('\n"{}"'.format(text.description))
+        
+        vertices = (['({},{})'.format(vertex.x, vertex.y)
+                    for vertex in text.bounding_poly.vertices])
+        # only need the topleft and bottom right vertices
+        topleft = tuple((text.bounding_poly.vertices[0].x, text.bounding_poly.vertices[0].y))
+        
+        bottomright = tuple((text.bounding_poly.vertices[2].x, text.bounding_poly.vertices[2].y))
+        
+        Receipt_details.coords = tuple((topleft,bottomright))
+        Receipt_details.save()
+        # box is going to the database
+        # receipt_coords is going to the database
+        
+        # print('bounds: {}'.format(','.join(vertices)))
+
+
+
