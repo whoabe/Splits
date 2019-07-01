@@ -9,7 +9,7 @@ import numpy as np
 from models.receipt import Receipt
 from models.receipt_details import Receipt_details
 from werkzeug.utils import secure_filename
-from helpers import upload_file_to_s3
+from helpers import upload_file_to_s3, detect_text_uri
 
 web_dir = os.path.join(os.path.dirname(
     os.path.abspath(__file__)), 'splits_web')
@@ -85,6 +85,11 @@ def upload_file():
         
         if instance.save():
             flash("Receipt uploaded")
+
+            # have it run the google function
+            # detect_text_uri(instance.receipt_image_url, instance.id)
+            detect_text_uri(instance)
+
             return render_template('home.html')
             # have it render out somewhere else
 
@@ -93,40 +98,3 @@ def upload_file():
         flash('wrong content type')
         return render_template('home.html')
         # have it render out somewhere else
-
-
-'''send image url to google vision AI and then put the text location and text in a database'''
-@app.route("/", methods=["POST"])
-def detect_text_uri(receipt_image_url):
-    #setting coords as a dictionary
-    #need to pass in receipt_image_url for uri
- 
-    client = vision.ImageAnnotatorClient()
-    image = vision.types.Image()
-    image.source.image_uri = receipt_image_url
-    #need to define the url in above line
-
-    response = client.text_detection(image=image)
-    texts = response.text_annotations
-
-    for text in texts:
-        Receipt_details.text = text.description
-        #receipt_text is going to the database
-        # print('\n"{}"'.format(text.description))
-        
-        vertices = (['({},{})'.format(vertex.x, vertex.y)
-                    for vertex in text.bounding_poly.vertices])
-        # only need the topleft and bottom right vertices
-        topleft = tuple((text.bounding_poly.vertices[0].x, text.bounding_poly.vertices[0].y))
-        
-        bottomright = tuple((text.bounding_poly.vertices[2].x, text.bounding_poly.vertices[2].y))
-        
-        Receipt_details.coords = tuple((topleft,bottomright))
-        Receipt_details.save()
-        # box is going to the database
-        # receipt_coords is going to the database
-        
-        # print('bounds: {}'.format(','.join(vertices)))
-
-
-
