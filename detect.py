@@ -3,6 +3,7 @@ import io
 import os
 import cv2
 import numpy as np
+import json
 
 # # Imports the Google Cloud client library
 # from google.cloud import vision
@@ -87,6 +88,8 @@ for coord in coords:
     cv2.rectangle(image, topleft, bottomright, (0,255,0), 3)
 
 print(coords)
+# print(json.dumps(coords))
+
 
 cv2.imshow('Red dots', image)
 cv2.waitKey(0)
