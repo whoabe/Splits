@@ -1,6 +1,6 @@
 import os
 from config import Config
-from flask import Flask, render_template, request, flash
+from flask import Flask, render_template, request, flash, redirect, url_for
 from models.base_model import db
 from google.cloud import vision
 import io
@@ -90,7 +90,8 @@ def upload_file():
             # detect_text_uri(instance.receipt_image_url, instance.id)
             detect_text_uri(instance)
 
-            return render_template('home.html')
+            # return render_template('home.html')
+            return redirect(url_for('show_receipt', id=instance.id))
             # have it render out somewhere else
 
 
@@ -98,3 +99,11 @@ def upload_file():
         flash('wrong content type')
         return render_template('home.html')
         # have it render out somewhere else
+
+# @app.route("/receipt/<id>", methods=["GET"])
+# def show_receipt(id):
+#     receipt = Receipt.get_by_id(id)
+#     receipt_details = Receipt_details.select().where(Receipt_details.receipt_id==id)
+
+
+#     return render_template("imagecoordfinder.html", receipt=receipt, textList=receipt_details)

@@ -43,7 +43,6 @@ def index2(receipt_id):
 
     if receipt:
         receipt_details = Receipt_details.select().where(Receipt_details.receipt_id==receipt.id)
-
         for i in receipt_details:
             # check each item in receipt_details to see if the CC is in the box
             tuple_coords = eval(i.coords)
