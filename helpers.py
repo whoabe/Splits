@@ -34,8 +34,6 @@ def upload_file_to_s3(file, bucket_name, acl="public-read"):
     """
 
     try:
-        # breakpoint() 
-        # hits this breakpoint
 
         s3.upload_fileobj(
             file,
