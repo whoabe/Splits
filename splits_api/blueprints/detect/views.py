@@ -28,16 +28,20 @@ detect_api_blueprint = Blueprint('detect_api',
 #     return "detect API, want a dictionary that contains the coord as key and text as value"
 
 
-@detect_api_blueprint.route('/<receipt_id>', methods=['GET'])
+@detect_api_blueprint.route('/<receipt_id>', methods=['POST'])
 def index2(receipt_id):
     # takes in the click coords and receipt id and returns the text value if it exists within one of the box coords
 
     # clicked_coords = request.form.get('coords')
-    clicked_coords = [1500, 1600] #test case
-    #should output RM15.09
+    # clicked_coords = [1500, 1600] #test case
+    # #should output RM15.09
 
-    clicked_coords_x = clicked_coords[0]
-    clicked_coords_y = clicked_coords[1]    
+    clicked_coords = request.get_data()
+    clicked_coords = clicked_coords.decode('utf-8')
+    clicked_coords = clicked_coords.split(',')
+    
+    clicked_coords_x = int(clicked_coords[0])
+    clicked_coords_y = int(clicked_coords[1])
 
     receipt = Receipt.get_by_id(receipt_id)
 
