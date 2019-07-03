@@ -100,10 +100,10 @@ def upload_file():
         return render_template('home.html')
         # have it render out somewhere else
 
-# @app.route("/receipt/<id>", methods=["GET"])
-# def show_receipt(id):
-#     receipt = Receipt.get_by_id(id)
-#     receipt_details = Receipt_details.select().where(Receipt_details.receipt_id==id)
+@app.route("/receipt/<id>", methods=["GET"])
+def show_receipt(id):
+    receipt = Receipt.get_by_id(id)
+    receipt_details = Receipt_details.select().where(Receipt_details.receipt_id==id)
 
 
-#     return render_template("imagecoordfinder.html", receipt=receipt, textList=receipt_details)
+    return render_template("imagecoordfinder.html", receipt=receipt, textList=receipt_details)
