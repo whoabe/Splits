@@ -92,3 +92,10 @@ def detect_text_uri(instance):
         # receipt_coords is going to the database
         
         # print('bounds: {}'.format(','.join(vertices)))
+
+def RepresentsInt(s):
+    try: 
+        int(s)
+        return True
+    except ValueError:
+        return False
