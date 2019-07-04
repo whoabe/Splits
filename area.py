@@ -12,7 +12,7 @@ class Area(object):
     #     return ((self.BR_x-self.TL_x)*(self.TL_y-self.BR_y)
 
 
-    def abcde(self, x, y):
+    def inside(self, x, y):
         if x >= self.TL_x and x <= self.BR_x and y >= self.TL_y and y <= self.BR_y:
             return True
         else:
