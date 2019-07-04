@@ -5,10 +5,11 @@ from models.base_model import db
 from google.cloud import vision
 import io
 import cv2
+import urllib
 import numpy as np
+from werkzeug import secure_filename
 from models.receipt import Receipt
 from models.receipt_details import Receipt_details
-from werkzeug.utils import secure_filename
 from helpers import upload_file_to_s3, detect_text_uri
 
 web_dir = os.path.join(os.path.dirname(
@@ -80,15 +81,25 @@ def upload_file():
         # output = upload_file_to_s3(file, Config.S3_BUCKET)
         upload_file_to_s3(file, Config.S3_BUCKET)
         # user = current_user
-
+    
         instance = Receipt(receipt_image = file.filename)
         
         if instance.save():
             flash("Receipt uploaded")
 
             # have it run the google function
-            # detect_text_uri(instance.receipt_image_url, instance.id)
             detect_text_uri(instance)
+            
+            #get original image dimensions
+            #see https://www.pyimagesearch.com/2015/03/02/convert-url-to-image-with-python-and-opencv/
+            response = urllib.request.urlopen(instance.receipt_image_url)
+            image = np.asarray(bytearray(response.read()), dtype="uint8")
+            image = cv2.imdecode(image, cv2.IMREAD_COLOR)
+            image_width, image_height = image.shape[1::-1]
+
+            instance.receipt_width=image_width
+            instance.receipt_height=image_height
+            instance.save()
 
             # return render_template('home.html')
             return redirect(url_for('show_receipt', id=instance.id))
@@ -103,7 +114,7 @@ def upload_file():
 @app.route("/receipt/<id>", methods=["GET"])
 def show_receipt(id):
     receipt = Receipt.get_by_id(id)
-    receipt_details = Receipt_details.select().where(Receipt_details.receipt_id==id)
+    # receipt_details = Receipt_details.select().where(Receipt_details.receipt_id==id)
 
 
-    return render_template("imagecoordfinder.html", receipt=receipt, textList=receipt_details)
+    return render_template("imagecoordfinder.html", receipt=receipt)
