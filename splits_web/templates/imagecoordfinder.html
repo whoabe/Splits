@@ -19,7 +19,7 @@
         <![endif]-->
 
         <div class="row">
-            <div class="col-md-6 d-inline-block position-absolute" style="height: 100vh; overflow: scroll">
+            <div class="col-md-6 d-inline-block position-absolute" style="height: 95vh; overflow-y: scroll">
                 <form name="clickedCoord" action="">
                     <input type="hidden" value="" name="xCoordinate">
                     <input type="hidden" value="" name="yCoordinate">
@@ -29,16 +29,20 @@
 
             
 
-            <div class="col-md-6 pt-5 pl-5 w-100" style="margin-left: auto;">
-                <form class="position-fixed text-center" name="line1" style="display: inline-block; background-color: rgba(0, 0, 0, 0.4)">
-                    <div id="listField">
+            <div class="col-md-6 pt-5 w-100" style="margin-left: auto;">
+                <form class="position-fixed text-center" name="line1" style="display: inline-block;">
+                    <div id="listField" style="padding:1rem">
+                    </div>
+                    <div id="serviceField">
+                        <span>Service 10%: </span>
+                        <input disabled class="active" name="service" value="0.00">
                     </div>
                     <div id="taxField">
-                        <span style="font-size: 2rem; color: wheat">SST</span>
-                        <input disabled name="tax" value="0.00">
+                        <span>SST 6%: </span>
+                        <input disabled class="active" name="tax" value="0.00">
                     </div>
                     <div id="totalField">
-                        <span style="font-size: 2rem; color: wheat">Total</span>
+                        <span>Total: </span>
                         <input disabled id="total" name="total" value="0.00">
                     </div>
                     <button type="button" id="addLineButton">+</button>
@@ -72,23 +76,47 @@
                     type: "POST",
                     url: "/api/v1/detect/{{receipt.id}}",
                     data: `${xCoordinate}, ${yCoordinate}`,
-                    success: function(response){
+                    success: function(data, response){
                         console.log(`Successful: ${response}`);
+                        console.log(data)
                     }
                 }).done(function(data){
-                    for (let i = 0; i < $('input:text').length; i++) {
-                        if ((!$("input:text")[i].value && data!='not found')) {
-                            $('input:text')[i].value = data
-                            if ($('input:text')[i].name=="price"){
-                                addLine()
-                                addTotal()
+                    // for (let i = 0; i < $('input:text').length; i++) {
+                    //     if ((!$("input:text")[i].value && data!='not found')) {
+                    //         $('input:text')[i].value = data
+                    //         if ($('input:text')[i].name=="price"){
+                    //             addLine()
+                    //             addTotal()
+                    //         }
+                    //         break
+                    //     }
+                    // }
+                    if (data!='not found'){
+                        for (let i=0; i<$('input[name="description"]').length; i++){
+                            if (!$('input[name="description"]')[i].value){
+                                $('input[name="description"]')[i].value=data.description;
                             }
-                            break
+                            if (!$('input[name="quantity"]')[i].value){
+                                $('input[name="quantity"]')[i].value = data.quantity;
+                            }
+                            if (!$('input[name="price"]')[i].value){
+                                $('input[name="price"]')[i].addEventListener('input', function(){
+                                    $('input[name="subtotal"]')[i].value = parseFloat((parseInt(data.quantity) * parseFloat($('input[name="price"]')[i].value)).toFixed(2))
+                                    addTotal()
+                                })
+                                $('input[name="price"]')[i].value = data.unit_price;
+                            }
+                            if (!$('input[name="subtotal"]')[i].value){
+                                $('input[name="subtotal"]')[i].value = data.subtotal;
+                            }
                         }
+                        addLine()
+                        addTotal()
                     }
+
                 });
             }
-
+            var count = 1
             function addLine(){
                 var desc = document.createElement("input")
                 desc.setAttribute('value', '')
@@ -104,14 +132,21 @@
                 price.setAttribute('size', '5rem')
                 price.setAttribute('name', 'price')
                 price.setAttribute('placeholder', 'Unit price')
-                price.setAttribute('oninput', addTotal)
+                var subtotal = document.createElement("input")
+                subtotal.setAttribute('value', '')
+                subtotal.setAttribute('size', '5rem')
+                subtotal.setAttribute('name', 'subtotal')
+                subtotal.setAttribute('placeholder', 'Amount')
+                subtotal.addEventListener('input', addTotal)
                 var newDiv = document.createElement("div")
-                newDiv.append('Item: ')
+                newDiv.append(count+". ")
                 newDiv.appendChild(desc)
                 newDiv.appendChild(qty)
                 newDiv.appendChild(price)
+                newDiv.appendChild(subtotal)
                 listField = document.getElementById('listField')
                 listField.appendChild(newDiv)
+                count++
             }
 
             function undo(e){
@@ -125,15 +160,19 @@
             }
 
             function addTotal(){
+                console.log('checking total')
                 let total = 0
-                $('input[name="price"]').each(function(i,section){
+                $('input[name="subtotal"]').each(function(i,section){
                     if (section.value && !isNaN(section.value)){
                         total += parseFloat(section.value)
                     }
                 })
-                console.log(total)
+                if ($('input[name="service"]')[0].classList.contains('active')){
+                    $('input[name="service"]')[0].value = (total*0.1).toFixed(2)
+                    total += (parseFloat($('input[name="service"]')[0].value))
+                }
                 if (!isNaN(total)){
-                    $('input[name="total"]')[0].value=total
+                    $('input[name="total"]')[0].value=total.toFixed(2)
                 }
             }
             
