@@ -6,7 +6,7 @@ from playhouse.hybrid import hybrid_property
 class Receipt_details(BaseModel):
     text = pw.CharField(unique=False, null = True)
     coords = pw.CharField(unique=False, null = True)
-    receipt_id = pw.IntegerField(Receipt, unique=False)
+    receipt = pw.ForeignKeyField(Receipt, unique=False)
 
 ''' 
 defining these functions to make it easier to output the values

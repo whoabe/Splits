@@ -36,6 +36,7 @@ def index2(receipt_id):
     # clicked_coords = [1500, 1600] #test case
     # #should output RM15.09
 
+    #obtains click coordinates from the user
     clicked_coords = request.get_data()
     clicked_coords = clicked_coords.decode('utf-8')
     clicked_coords = clicked_coords.split(',')
