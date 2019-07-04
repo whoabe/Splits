@@ -88,7 +88,7 @@ def upload_file():
             flash("Receipt uploaded")
 
             # have it run the google function
-            # detect_text_uri(instance)
+            detect_text_uri(instance)
             
             #get original image dimensions
             #see https://www.pyimagesearch.com/2015/03/02/convert-url-to-image-with-python-and-opencv/

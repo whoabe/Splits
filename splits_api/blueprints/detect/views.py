@@ -47,7 +47,7 @@ def index2(receipt_id):
     receipt = Receipt.get_by_id(receipt_id)
 
     if receipt:
-        receipt_details = Receipt_details.select().where(Receipt_details.receipt_id==receipt.id)
+        receipt_details = Receipt_details.select().where(Receipt_details.receipt==receipt)
         for i in receipt_details:
             # check each item in receipt_details to see if the CC is in the box
             tuple_coords = eval(i.coords)
@@ -55,6 +55,10 @@ def index2(receipt_id):
             TL_y = tuple_coords[0][1]
             BR_x = tuple_coords[1][0]
             BR_y = tuple_coords[1][1]
+
+            if BR_x - TL_x < 20:
+                TL_x -= 25
+                BR_x += 25
             '''
 test code, should return True, and i.text = RM15.09
 
@@ -73,7 +77,7 @@ BR_y = 1637
 
             if test2.abcde(clicked_coords_x, clicked_coords_y) == True:
                 return jsonify(i.text)
-
+            
 
     # takes clicked coords, runs it through the query with the receipt_id and returns the text value, else return none
     return 'not found'
