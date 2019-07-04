@@ -39,7 +39,7 @@
                     </div>
                     <div id="taxField">
                         <span>SST 6%: </span>
-                        <input disabled class="active" name="tax" value="0.00">
+                        <input disabled class="active" name="sst" value="0.00">
                     </div>
                     <div id="totalField">
                         <span>Total: </span>
@@ -167,9 +167,14 @@
                         total += parseFloat(section.value)
                     }
                 })
+                tempTotal = total //prevent multiplicative addition for the following two taxes
                 if ($('input[name="service"]')[0].classList.contains('active')){
-                    $('input[name="service"]')[0].value = (total*0.1).toFixed(2)
+                    $('input[name="service"]')[0].value = (tempTotal*0.1).toFixed(2)
                     total += (parseFloat($('input[name="service"]')[0].value))
+                }
+                if ($('input[name="sst"]')[0].classList.contains('active')){
+                    $('input[name="sst"]')[0].value = (tempTotal*0.06).toFixed(2)
+                    total += (parseFloat($('input[name="sst"]')[0].value))
                 }
                 if (!isNaN(total)){
                     $('input[name="total"]')[0].value=total.toFixed(2)
