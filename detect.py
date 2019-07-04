@@ -3,6 +3,9 @@ import io
 import os
 import cv2
 import numpy as np
+import json
+from dotenv import load_dotenv
+load_dotenv()
 
 # # Imports the Google Cloud client library
 # from google.cloud import vision
@@ -72,6 +75,7 @@ def detect_text(path):
             coords[box] = "imagebox"
         else:
             coords[box] = text.description
+        return "asdasd"
 
 detect_text('./Receipt Images/receipt6.jpg')
 image = cv2.imread('./Receipt Images/receipt6.jpg')
@@ -87,6 +91,8 @@ for coord in coords:
     cv2.rectangle(image, topleft, bottomright, (0,255,0), 3)
 
 print(coords)
+# print(json.dumps(coords))
+
 
 cv2.imshow('Red dots', image)
 cv2.waitKey(0)

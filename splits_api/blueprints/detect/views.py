@@ -90,12 +90,13 @@ def index2(receipt_id):
     # takes in the click coords and receipt id and returns the text value if it exists within one of the box coords
 
     # clicked_coords = request.form.get('coords')
-    clicked_coords = [1500, 1600] #test case
+    # clicked_coords = [1500, 1600] #test case
     # #should output RM15.09
 
-    # clicked_coords = request.get_data()
-    # clicked_coords = clicked_coords.decode('utf-8')
-    # clicked_coords = clicked_coords.split(',')
+    #obtains click coordinates from the user
+    clicked_coords = request.get_data()
+    clicked_coords = clicked_coords.decode('utf-8')
+    clicked_coords = clicked_coords.split(',')
     
     clicked_coords_x = int(clicked_coords[0])
     clicked_coords_y = int(clicked_coords[1])
@@ -103,8 +104,7 @@ def index2(receipt_id):
     receipt = Receipt.get_by_id(receipt_id)
 
     if receipt:
-        receipt_details = Receipt_details.select().where(Receipt_details.receipt_id==receipt.id)
-
+        receipt_details = Receipt_details.select().where(Receipt_details.receipt==receipt)
         for i in receipt_details:
             # check each item in receipt_details to see if the CC is in the box
             tuple_coords = eval(i.coords)
@@ -112,6 +112,10 @@ def index2(receipt_id):
             TL_y = tuple_coords[0][1]
             BR_x = tuple_coords[1][0]
             BR_y = tuple_coords[1][1]
+
+            if BR_x - TL_x < 20:
+                TL_x -= 25
+                BR_x += 25
             '''
 test code, should return True, and i.text = RM15.09
 

@@ -8,9 +8,9 @@ if not os.getenv('FLASK_ENV') == 'production':
     load_dotenv()
 
 
+from models.base_model import db
 import peeweedbevolve
 from models import *
-from models.base_model import db
 
 print("Running Migration")
 if os.getenv('FLASK_ENV') == 'production':

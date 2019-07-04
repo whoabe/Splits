@@ -86,7 +86,7 @@ def detect_text_uri(instance):
         coords = tuple((topleft,bottomright))
         # Receipt_details.receipt_id = id
         if len(text.description) < 50:
-            instance2 = Receipt_details(text = text.description, coords = coords, receipt_id = instance.id)
+            instance2 = Receipt_details(text = text.description, coords = coords, receipt = instance)
             instance2.save()
         # box is going to the database
         # receipt_coords is going to the database
