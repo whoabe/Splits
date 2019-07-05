@@ -35,15 +35,15 @@
                     </div>
                     <div id="serviceField">
                         <span>Service 10%: </span>
-                        <input disabled class="active" name="service" value="0.00">
+                        <input disabled class="active" name="service" size="5rem" value="0.00">
                     </div>
                     <div id="taxField">
                         <span>SST 6%: </span>
-                        <input disabled class="active" name="sst" value="0.00">
+                        <input disabled class="active" size="5rem" name="sst" value="0.00">
                     </div>
                     <div id="totalField">
                         <span>Total: </span>
-                        <input disabled id="total" name="total" value="0.00">
+                        <input disabled id="total" name="total" size="5rem" value="0.00">
                     </div>
                     <button type="button" id="addLineButton">+</button>
                     <button type="button" id="undoButton">Undo</button>
@@ -151,12 +151,17 @@
 
             function undo(e){
                 e.preventDefault()
-                for (let i = $('input:text').length-3; i >= 0; i--) {
+                //this function contains hardcoded values and will need better logic
+                for (let i = $('input:text').length-7; i >= 0; i--) {
                     if ($("input:text")[i].value) {
-                        $('input:text')[i].value = ""
+                        for (let j=0; j<4; j++){
+                            $("input:text")[i-j].value = ""
+                        }
+                        // $('input:text')[i].value = ""
                         break
                     }
                 }
+                addTotal()
             }
 
             function addTotal(){

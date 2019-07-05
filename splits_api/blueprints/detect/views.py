@@ -116,6 +116,9 @@ def index2(receipt_id):
             if BR_x - TL_x < 20:
                 TL_x -= 25
                 BR_x += 25
+
+            TL_y -= 10
+            BR_y += 10
             '''
 test code, should return True, and i.text = RM15.09
 
