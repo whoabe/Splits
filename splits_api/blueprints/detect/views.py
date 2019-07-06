@@ -116,6 +116,9 @@ def index2(receipt_id):
             if BR_x - TL_x < 20:
                 TL_x -= 25
                 BR_x += 25
+
+            TL_y -= 10
+            BR_y += 10
             '''
 test code, should return True, and i.text = RM15.09
 
@@ -170,9 +173,11 @@ BR_y = 1637
                 description_list = []
                 for item in line_list:
                     description_list.append(item.text)
+                # description_list = description_list[::-1]
                 description = ' '.join(description_list)
                 
                 unit_price = subtotal_value/quantity_value
+                unit_price = round(unit_price, 2)
                 # find out the unit price by diving subtotal by quantity
 
 
