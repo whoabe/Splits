@@ -13,25 +13,26 @@
         <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
         <link rel="stylesheet" href="">
         <style>
-            .hidden{ 
-                display: none; 
+
+            /* Trying to make a tick to flash on the image when user successfully gets a line
+            .visible
+               {
+                    background-color: rgba(0, 0, 0, 0.2);
+                    visibility: visible;
+                    opacity: 1;
+                    transition: opacity 2s linear;
+               }                
+            .hidden
+            {
+                    visibility: hidden;
+                    opacity: 0;
+                    transition: visibility 0s 2s, opacity 2s linear;
             }
-            .overlayTick{
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                background-color: rgba(0, 0, 0, 0.3);
-                overflow: hidden;
-                height: 100%;
-                animation-name: fadeOut;
-                transition: .5s ease-out;
-            }
-            
-            @keyframes fadeOut {
-                0% {opacity: 1;}
-                100% {opacity: 0; background-color: rgba(0, 0, 0, 0)}
-            }
+
+            #overlay{
+                background-color: rgba(0, 0, 0, 0.2);
+                visibility: hidden;
+            } */
 
             
         </style>
@@ -43,12 +44,13 @@
 
         <div class="row position-absolute">
             <!-- Left side -->
-            <div class="col-md-6 d-inline-block" style="height: 95vh; overflow-y: scroll">
-                <form name="clickedCoord" action="">
+            <div class="col-md-6 d-inline-block" style="height: 95vh; overflow-y: scroll;">
+                    <form name="clickedCoord" action="">
                     <input type="hidden" value="" name="xCoordinate">
                     <input type="hidden" value="" name="yCoordinate">
-                    <div id="overlay"></div>
-                    <img src="{{receipt.receipt_image_url}}" id="pic" style="max-width: 100%; float:left;">
+                    <div id="overlay">
+                        <img src="{{receipt.receipt_image_url}}" id="pic" style="max-width: 100%; float:left; visibility: visible">
+                    </div>
                 </form>
             </div>
 
@@ -58,7 +60,6 @@
                 <p style="font-size: 1rem">Click the item lines on your receipt. This site will tabulate </p>
                 <form class="text-center" name="line1" style="display: inline-block;">
                     <div id="listField" style="padding:1rem">
-                        <div id="tryAgain" class="hidden" style="color: red">Please try again!</div>
                     </div>
                     <div id="serviceField">
                         <span>Service 10%:</span>
