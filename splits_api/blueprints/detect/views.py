@@ -173,7 +173,7 @@ BR_y = 1637
                 description_list = []
                 for item in line_list:
                     description_list.append(item.text)
-                description_list = description_list[::-1]
+                # description_list = description_list[::-1]
                 description = ' '.join(description_list)
                 
                 unit_price = subtotal_value/quantity_value
