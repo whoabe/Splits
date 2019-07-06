@@ -44,7 +44,7 @@
 
         <div class="row position-absolute">
             <!-- Left side -->
-            <div class="col-md-6 d-inline-block" style="height: 95vh; overflow-y: scroll;">
+            <div class="col-md-6 d-inline-block" style="height: 95vh; overflow-y: auto;">
                     <form name="clickedCoord" action="">
                     <input type="hidden" value="" name="xCoordinate">
                     <input type="hidden" value="" name="yCoordinate">
@@ -59,25 +59,24 @@
                 <h2>Splits - the (hopefully) simple bill splitter!</h1>
                 <p style="font-size: 1rem">Click the item lines on your receipt. This site will tabulate </p>
                 <form class="text-center" name="line1" style="display: inline-block;">
-                    <div id="listField" style="padding:1rem">
+                    <div id="listField">
                     </div>
-                    <div id="serviceField">
-                        <span>Service 10%:</span>
-                        <input disabled class="active" name="service" size="5rem" value="0.00" style="margin-left: 0.5rem">
-                        <button type="button" id="service">Disable</button>
-                    </div>
+                    <button type="button" id="service" class="btn btn-secondary m-1">Service 10%</button>
+                    <button type="button" id="sst" class="btn btn-secondary m-1">SST 6%</button>
+                    <!-- Remember to uncomment the onload script if you're working on this to re-add the event listeners
+                    <button type="button" id="otherTax">Other %</button>
+                    <button type="button" id="fixed">Fixed amount</button> -->
                     <div id="taxField">
-                        <span>SST 6%:</span>
-                        <input disabled class="active" name="sst" size="5rem" value="0.00" style="margin-left: 0.5rem">
-                        <button type="button" id="sst">Disable</button>
+                        <span>Taxes:</span>
+                        <input disabled class="active input-group-text" name="tax" size="5rem" value="0.00" style="display: unset">
                     </div>
                     <div id="totalField">
                         <span>Total: </span>
-                        <input disabled id="total" name="total" size="5rem" value="0.00" style="margin-left: 0.5rem">
+                        <input disabled id="total" class="input-group-text" name="total" size="5rem" value="0.00" style="display: unset">
                     </div>
-                    <button type="button" id="addLineButton">+</button>
-                    <button type="button" id="undoButton">Undo</button>
-                    <button type="button" name="clear">Clear</button>
+                    <button type="button" id="addLineButton" class="btn btn-primary m-1">+</button>
+                    <button type="button" id="undoButton" class="btn btn-primary m-1">Undo</button>
+                    <button type="button" name="clear" class="btn btn-primary m-1">Clear</button>
                 </form>
             </div>
         </div>
@@ -88,6 +87,8 @@
                 document.getElementById('undoButton').addEventListener('click', undo)
                 $("#sst").click(toggleTaxes)
                 $("#service").click(toggleTaxes)
+                // $("#otherTax").click(toggleTaxes)
+                // $("#fixed").click(toggleTaxes)
                 addLine()
                 $('button[name="clear"]')[0].addEventListener('click', function(e){
                     for (let i=0; i<=$('input[name="subtotal"]').length+2; i++){
@@ -95,6 +96,7 @@
                     }
                     addLine()
                 })
+                $('#pic')[0].scrollTop = ($('#pic')[0].scrollHeight)
             }
             pic = document.getElementById('pic')
             pic.addEventListener('click', clickity)
@@ -165,16 +167,19 @@
                 desc.setAttribute('name', 'description')
                 desc.setAttribute('placeholder', 'Item description')
                 desc.setAttribute('size', '8rem')
+                desc.classList.add("input-group-text")
                 var qty = document.createElement("input")
                 qty.setAttribute('value', '')
                 qty.setAttribute('size', '1rem')
                 qty.setAttribute('name', 'quantity')
                 qty.setAttribute('placeholder', 'Qty')
+                qty.classList.add("input-group-text")
                 var price = document.createElement("input")
                 price.setAttribute('value', '')
                 price.setAttribute('size', '5rem')
                 price.setAttribute('name', 'price')
                 price.setAttribute('placeholder', 'Unit price')
+                price.classList.add("input-group-text")
                 price.addEventListener('input', function(e){
                     abc = e.target
                     console.log(abc)
@@ -189,6 +194,7 @@
                 subtotal.setAttribute('size', '5rem')
                 subtotal.setAttribute('name', 'subtotal')
                 subtotal.setAttribute('placeholder', 'Amount')
+                subtotal.classList.add("input-group-text")
                 subtotal.addEventListener('input', addTotal)
                 var newDiv = document.createElement("div")
                 newDiv.classList.add("d-flex")
@@ -211,39 +217,34 @@
 
             function addTotal(){
                 console.log('checking total')
-                let total = 0
+                let total = 0.00
+                let taxes = 0.00
                 $('input[name="subtotal"]').each(function(i,section){
                     if (section.value && !isNaN(section.value)){
                         total += parseFloat(section.value)
                     }
                 })
                 tempTotal = total //prevent multiplicative addition for the following two taxes
-                if ($('input[name="service"]')[0].classList.contains('active')){
-                    $('input[name="service"]')[0].value = (tempTotal*0.1).toFixed(2)
-                    total += (parseFloat($('input[name="service"]')[0].value))
-                } else{
-                    $('input[name="service"]')[0].value = 0.00
+                if ($('#sst')[0].classList.contains('active')){
+                    total += tempTotal * 0.06
+                    taxes += tempTotal * 0.06
                 }
-                if ($('input[name="sst"]')[0].classList.contains('active')){
-                    $('input[name="sst"]')[0].value = (tempTotal*0.06).toFixed(2)
-                    total += (parseFloat($('input[name="sst"]')[0].value))
-                } else{
-                    $('input[name="sst"]')[0].value = 0.00
+                if ($('#service')[0].classList.contains('active')){
+                    total += tempTotal* 0.1
+                    taxes += tempTotal * 0.1
                 }
                 if (!isNaN(total)){
                     $('input[name="total"]')[0].value=total.toFixed(2)
                 }
+                $('input[name="tax"]')[0].value=taxes.toFixed(2)
             }
             
             function toggleTaxes(e){
-                e.target.previousElementSibling.classList.toggle('active')
-                e.target.previousElementSibling.classList.toggle('inactive')
+                e.target.classList.toggle('active')
+                e.target.classList.toggle('inactive')
+                e.target.classList.toggle('btn-secondary')
+                e.target.classList.toggle('btn-success')
                 addTotal()
-                if (e.target.textContent == "Enable"){
-                    e.target.textContent= "Disable"
-                } else{
-                    e.target.textContent = "Enable"
-                }
             }
 
             function removeLine(){
