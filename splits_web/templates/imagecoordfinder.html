@@ -16,6 +16,24 @@
             .hidden{ 
                 display: none; 
             }
+            .overlayTick{
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                background-color: rgba(0, 0, 0, 0.3);
+                overflow: hidden;
+                height: 100%;
+                animation-name: fadeOut;
+                transition: .5s ease-out;
+            }
+            
+            @keyframes fadeOut {
+                0% {opacity: 1;}
+                100% {opacity: 0; background-color: rgba(0, 0, 0, 0)}
+            }
+
+            
         </style>
     </head>
     <body>
@@ -24,19 +42,20 @@
         <![endif]-->
 
         <div class="row position-absolute">
-            <div class="col-md-4 d-inline-block" style="height: 95vh; overflow-y: scroll">
+            <!-- Left side -->
+            <div class="col-md-6 d-inline-block" style="height: 95vh; overflow-y: scroll">
                 <form name="clickedCoord" action="">
                     <input type="hidden" value="" name="xCoordinate">
                     <input type="hidden" value="" name="yCoordinate">
+                    <div id="overlay"></div>
                     <img src="{{receipt.receipt_image_url}}" id="pic" style="max-width: 100%; float:left;">
                 </form>
             </div>
 
-            
-
-            <div class="col-md-4 pt-5 w-100" style="margin-left: auto;">
+            <!-- Right side -->
+            <div class="col-md-6 pt-5 w-100" style="margin-left: auto;">
                 <h2>Splits - the (hopefully) simple bill splitter!</h1>
-                <p style="font-size: 1rem">Click the item lines on your receipt!</p>
+                <p style="font-size: 1rem">Click the item lines on your receipt. This site will tabulate </p>
                 <form class="text-center" name="line1" style="display: inline-block;">
                     <div id="listField" style="padding:1rem">
                         <div id="tryAgain" class="hidden" style="color: red">Please try again!</div>
@@ -57,11 +76,8 @@
                     </div>
                     <button type="button" id="addLineButton">+</button>
                     <button type="button" id="undoButton">Undo</button>
-                    <button type="submit" name="finalize">Clear</button>
+                    <button type="button" name="clear">Clear</button>
                 </form>
-            </div>
-            <div class="col-md-4">
-                Stuff
             </div>
         </div>
         <script async defer>
@@ -71,9 +87,14 @@
                 document.getElementById('undoButton').addEventListener('click', undo)
                 $("#sst").click(toggleTaxes)
                 $("#service").click(toggleTaxes)
+                addLine()
+                $('button[name="clear"]')[0].addEventListener('click', function(e){
+                    for (let i=0; i<=$('input[name="subtotal"]').length+2; i++){
+                        removeLine()
+                    }
+                    addLine()
+                })
             }
-
-            // textList = [{"coord": [[27, 43], [565, 1092]], "text": "imagebox"}, {"coord": [[93, 56], [186, 76]], "text": "Isetan"}, {"coord": [[199, 53], [213, 74]], "text": "1"}, {"coord": [[227, 52], [321, 71]], "text": "Utama"}, {"coord": [[335, 48], [496, 66]], "text": "Chateraise"}, {"coord": [[142, 94], [184, 113]], "text": "2nd"}, {"coord": [[196, 91], [277, 113]], "text": "Floor,"}, {"coord": [[289, 91], [326, 108]], "text": "eat"}, {"coord": [[337, 86], [448, 112]], "text": "paradise"}, {"coord": [[88, 131], [160, 149]], "text": "Isetan"}, {"coord": [[171, 128], [260, 147]], "text": "Bandar"}, {"coord": [[270, 125], [348, 143]], "text": "Utama"}, {"coord": [[359, 122], [408, 147]], "text": "City"}, {"coord": [[416, 120], [502, 139]], "text": "Centre"}, {"coord": [[90, 168], [169, 186]], "text": "Sweet"}, {"coord": [[181, 165], [258, 184]], "text": "Bakes"}, {"coord": [[268, 162], [382, 185]], "text": "Boutique"}, {"coord": [[392, 158], [442, 178]], "text": "Sdn"}, {"coord": [[454, 156], [501, 176]], "text": "Bhd"}, {"coord": [[134, 202], [193, 226]], "text": "10-B,"}, {"coord": [[205, 202], [269, 220]], "text": "Jalan"}, {"coord": [[280, 198], [409, 222]], "text": "Teknologi"}, {"coord": [[421, 195], [458, 215]], "text": "3/5"}, {"coord": [[85, 240], [153, 259]], "text": "Pusat"}, {"coord": [[163, 238], [291, 262]], "text": "Teknologi"}, {"coord": [[302, 235], [412, 252]], "text": "Sunsuria"}, {"coord": [[423, 231], [473, 250]], "text": "PJU"}, {"coord": [[484, 229], [508, 249]], "text": "/5"}, {"coord": [[189, 275], [243, 294]], "text": "Kota"}, {"coord": [[256, 273], [395, 292]], "text": "Damansara"}, {"coord": [[211, 309], [369, 328]], "text": "03-77323137"}, {"coord": [[167, 365], [180, 380]], "text": "*"}, {"coord": [[194, 365], [252, 389]], "text": "TAX"}, {"coord": [[262, 362], [393, 388]], "text": "INVOICE"}, {"coord": [[312, 416], [438, 433]], "text": "27/06/2019"}, {"coord": [[464, 413], [512, 431]], "text": "8:42"}, {"coord": [[522, 412], [560, 430]], "text": "PM"}, {"coord": [[176, 419], [278, 438]], "text": "1000076"}, {"coord": [[31, 420], [97, 439]], "text": "Order"}, {"coord": [[109, 420], [147, 439]], "text": "No."}, {"coord": [[31, 458], [114, 478]], "text": "Receipt"}, {"coord": [[125, 457], [160, 474]], "text": "No."}, {"coord": [[176, 463], [178, 475]], "text": ":"}, {"coord": [[194, 456], [340, 472]], "text": "001-1228435"}, {"coord": [[177, 496], [178, 508]], "text": ":"}, {"coord": [[195, 489], [231, 507]], "text": "Mai"}, {"coord": [[31, 492], [116, 509]], "text": "Cashier"}, {"coord": [[406, 536], [504, 554]], "text": "Amount"}, {"coord": [[515, 534], [562, 554]], "text": "Tax"}, {"coord": [[287, 536], [373, 555]], "text": "U.Price"}, {"coord": [[205, 538], [246, 562]], "text": "Qty"}, {"coord": [[30, 539], [88, 559]], "text": "Item"}, {"coord": [[455, 591], [503, 610]], "text": "5.40"}, {"coord": [[325, 592], [373, 610]], "text": "5.40"}, {"coord": [[236, 593], [243, 611]], "text": "1"}, {"coord": [[30, 595], [88, 613]], "text": "CO42"}, {"coord": [[30, 625], [106, 646]], "text": "Double"}, {"coord": [[119, 627], [206, 649]], "text": "Fantagy"}, {"coord": [[313, 657], [373, 675]], "text": "15.85"}, {"coord": [[444, 657], [504, 675]], "text": "15.85"}, {"coord": [[236, 658], [243, 676]], "text": "1"}, {"coord": [[29, 659], [87, 678]], "text": "C033"}, {"coord": [[28, 694], [146, 714]], "text": "Legendary"}, {"coord": [[156, 692], [217, 710]], "text": "Fresh"}, {"coord": [[228, 692], [300, 709]], "text": "Cream"}, {"coord": [[313, 691], [368, 709]], "text": "Cake"}, {"coord": [[28, 754], [119, 773]], "text": "Subtotal"}, {"coord": [[499, 755], [563, 773]], "text": "21.25"}, {"coord": [[27, 800], [80, 819]], "text": "Total"}, {"coord": [[500, 800], [563, 818]], "text": "21.25"}, {"coord": [[176, 858], [287, 888]], "text": ":MYR"}, {"coord": [[27, 859], [95, 889]], "text": "TOT"}, {"coord": [[447, 859], [561, 889]], "text": "21.25"}, {"coord": [[30, 912], [136, 936]], "text": "Payment"}, {"coord": [[147, 913], [230, 933]], "text": "Details"}, {"coord": [[29, 944], [77, 964]], "text": "Cash"}, {"coord": [[29, 973], [77, 996]], "text": "Cash"}, {"coord": [[90, 974], [170, 1002]], "text": "Change"}, {"coord": [[503, 946], [565, 965]], "text": "21.25"}, {"coord": [[516, 978], [563, 997]], "text": "0.00"}, {"coord": [[233, 1043], [302, 1066]], "text": "Thank"}, {"coord": [[312, 1048], [349, 1070]], "text": "you"}, {"coord": [[186, 1077], [260, 1092]], "text": "Please"}, {"coord": [[272, 1082], [330, 1092]], "text": "come"}, {"coord": [[342, 1078], [401, 1092]], "text": "agan"}]
             pic = document.getElementById('pic')
             pic.addEventListener('click', clickity)
             var count = 1
@@ -95,19 +116,11 @@
                         console.log(data)
                     }
                 }).done(function(data){
-                    // for (let i = 0; i < $('input:text').length; i++) {
-                    //     if ((!$("input:text")[i].value && data!='not found')) {
-                    //         $('input:text')[i].value = data
-                    //         if ($('input:text')[i].name=="price"){
-                    //             addLine()
-                    //             addTotal()
-                    //         }
-                    //         break
-                    //     }
-                    // }
                     if (data!='not found'){
-                        // for (let i=0; i<$('input[name="description"]').length; i++){
-                        addLine()
+                        $('#overlay').toggleClass('overlayTick')
+                        if ($('input[name="description"]')[count-2].value){
+                            addLine()
+                        }
                         for (let i=0; i<count; i++){
                             if (!$('input[name="description"]')[i].value){
                                 $('input[name="description"]')[i].value=data.description;
@@ -133,14 +146,12 @@
                                     }
                                 })
                                 $('input[name="subtotal"]')[i].value = data.subtotal;
-                                // if ((i+1) <= count){
-                                //     addLine()
-                                // } currently not workign. supposed to not add extra lines if there's already extra lines
-                                // might be better to just make a removeLine function
                                 break
                             }
                         }
                         addTotal()
+                    }else{
+                        
                     }
                 });
             }
@@ -193,16 +204,6 @@
 
             function undo(e){
                 e.preventDefault()
-                //this function contains hardcoded values and will need better logic
-                // for (let i = $('input:text').length-7; i >= 0; i--) {
-                //     if ($("input:text")[i].value) {
-                //         for (let j=0; j<4; j++){
-                //             $("input:text")[i-j].value = ""
-                //         }
-                //         // $('input:text')[i].value = ""
-                //         break
-                //     }
-                // }
                 removeLine()
                 addTotal()
             }
@@ -245,7 +246,7 @@
             }
 
             function removeLine(){
-                $('input[name="subtotal"]')[count-2].parentNode.remove()
+                $('input[name="subtotal"]')[$('input[name="subtotal"]').length-1].parentNode.remove()
                 count--
             }
             
