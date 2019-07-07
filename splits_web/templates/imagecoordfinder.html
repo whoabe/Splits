@@ -6,34 +6,102 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <title>image clicky</title>
+        <title>Splits - Receipt and table</title>
         <meta name="description" content="">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
         <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
         <link rel="stylesheet" href="">
         <style>
-            .hidden{ 
-                display: none; 
-            }
-            .overlayTick{
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                background-color: rgba(0, 0, 0, 0.3);
-                overflow: hidden;
-                height: 100%;
-                animation-name: fadeOut;
-                transition: .5s ease-out;
-            }
-            
-            @keyframes fadeOut {
-                0% {opacity: 1;}
-                100% {opacity: 0; background-color: rgba(0, 0, 0, 0)}
+
+            /* Trying to make a tick to flash on the image when user successfully gets a line
+            .visible
+               {
+                    background-color: rgba(0, 0, 0, 0.2);
+                    visibility: visible;
+                    opacity: 1;
+                    transition: opacity 2s linear;
+               }                
+            .hidden
+            {
+                    visibility: hidden;
+                    opacity: 0;
+                    transition: visibility 0s 2s, opacity 2s linear;
             }
 
+            #overlay{
+                background-color: rgba(0, 0, 0, 0.2);
+                visibility: hidden;
+            } */
+
+            body{
+                color: rgb(80, 80, 80);
+            }
+
+            .row{
+                margin: 0;
+            }
+
+            p{
+                margin: 0;
+            }
+
+            .input-group-text{
+                padding: 0rem 0.4rem;
+            }
             
+            #fixed{
+                background: white;
+            }
+
+            input[name="description"],
+            input[name="quantity"],
+            input[name="price"],
+            input[name="subtotal"]{
+                background-color: white;
+            }
+
+            tr:nth-child(odd){
+                text-align: right;
+            }
+
+            .btn{
+                padding: 0.2rem 0.5rem;
+            }
+
+            .btn-primary{
+                background-color: rgb(141, 135, 128);
+                border-color: #7E685A;
+            }
+
+            .btn-success,
+            .btn-success.active,
+            .btn-success:not(:disabled):not(.disabled).active{
+                background-color: #AFD275;
+                color: rgb(60, 60, 60)
+            }
+
+            .btn-danger{
+                background-color: #E7717D;
+                border-color: #7E685A;
+            }
+
+            .btn-secondary{
+                background-color: #C2CAD0;
+                color: rgb(60, 60, 60)
+            }
+
+            .btn-primary:hover{
+                background-color:rgb(153, 103, 72);
+                border-color: #7E685A;
+            }
+
+            #main{
+                border-radius: 2rem;
+                padding: 1rem;
+                background-color: #eedad1;
+            }
+
         </style>
     </head>
     <body>
@@ -43,41 +111,60 @@
 
         <div class="row position-absolute">
             <!-- Left side -->
-            <div class="col-md-6 d-inline-block" style="height: 95vh; overflow-y: scroll">
-                <form name="clickedCoord" action="">
+            <div class="col-md-6 d-inline-block" style="height: 100vh; overflow-y: auto;">
+                    <form name="clickedCoord" action="">
                     <input type="hidden" value="" name="xCoordinate">
                     <input type="hidden" value="" name="yCoordinate">
-                    <div id="overlay"></div>
-                    <img src="{{receipt.receipt_image_url}}" id="pic" style="max-width: 100%; float:left;">
+                    <div id="overlay">
+                        <img src="{{receipt.receipt_image_url}}" id="pic" style="max-width: 100%; float:left; visibility: visible">
+                    </div>
                 </form>
             </div>
 
             <!-- Right side -->
-            <div class="col-md-6 pt-5 w-100" style="margin-left: auto;">
-                <h2>Splits - the (hopefully) simple bill splitter!</h1>
-                <p style="font-size: 1rem">Click the item lines on your receipt. This site will tabulate </p>
-                <form class="text-center" name="line1" style="display: inline-block;">
-                    <div id="listField" style="padding:1rem">
-                        <div id="tryAgain" class="hidden" style="color: red">Please try again!</div>
+            <div class="col-md-6 w-100 d-flex align-items-center">
+                <div class="m-0 d-flex flex-column justify-content-center align-items-center" id="main">
+                    <h2>Splits - the (hopefully) simple bill splitter!</h1>
+                    <div class="float-left">
+                        <p>Click the item lines on your receipt.</p>
+                        <p>This site will try its best to tabulate the results below.</p>
                     </div>
-                    <div id="serviceField">
-                        <span>Service 10%:</span>
-                        <input disabled class="active" name="service" size="5rem" value="0.00" style="margin-left: 0.5rem">
-                        <button type="button" id="service">Disable</button>
-                    </div>
-                    <div id="taxField">
-                        <span>SST 6%:</span>
-                        <input disabled class="active" name="sst" size="5rem" value="0.00" style="margin-left: 0.5rem">
-                        <button type="button" id="sst">Disable</button>
-                    </div>
-                    <div id="totalField">
-                        <span>Total: </span>
-                        <input disabled id="total" name="total" size="5rem" value="0.00" style="margin-left: 0.5rem">
-                    </div>
-                    <button type="button" id="addLineButton">+</button>
-                    <button type="button" id="undoButton">Undo</button>
-                    <button type="button" name="clear">Clear</button>
-                </form>
+                    <form class="text-center" name="line1" style="display: inline-block;">
+                        <div id="listField">
+                        </div>
+                        <button type="button" id="service" class="active btn btn-success m-1">Service 10%</button>
+                        <button type="button" id="sst" class="active btn btn-success m-1">SST 6%</button>
+                        <table>
+                            <div id="taxField">
+                                <tr>
+                                    <td><span>Taxes:</span></td>
+                                    <td><input disabled class="active input-group-text" name="tax" size="5rem" value="0.00" style="display: unset"></td>
+                                </tr>
+                            </div>
+                            <div id="extraField" class="d-flex flex-row">
+                                <tr>
+                                    <div class="d-flex flex-column">
+                                        <td style="text-align: right; line-height: 1rem">
+                                            <span>Extra fixed $:</span><br>
+                                            <small>For Grab delivery fee/discount</small>
+                                        </td>
+                                    </div>
+                                    <!-- IMPORTANT: WORK ON THIS! -->
+                                    <td><input class="input-group-text" id="fixed" name="fixed" size="5rem" value="" placeholder="0.00"></td>
+                                </tr>
+                            </div>
+                            <div id="totalField">
+                                <tr>
+                                    <td><span>Total: </span></td>
+                                    <td><input disabled id="total" class="input-group-text" name="total" size="5rem" value="0.00" style="display: unset"></td>
+                                </tr>
+                            </div>
+                        </table>
+                        <button type="button" id="addLineButton" class="btn btn-primary m-1">+</button>
+                        <button type="button" id="undoButton" class="btn btn-primary m-1">Undo</button>
+                        <button type="button" name="clear" class="btn btn-danger m-1">Clear</button>
+                    </form>
+                </div>
             </div>
         </div>
         <script async defer>
@@ -88,10 +175,13 @@
                 $("#sst").click(toggleTaxes)
                 $("#service").click(toggleTaxes)
                 addLine()
+                //supposed to clear all lines and add one line but need to clear several times to achieve it
                 $('button[name="clear"]')[0].addEventListener('click', function(e){
-                    for (let i=0; i<=$('input[name="subtotal"]').length+2; i++){
+                    for (let i=0; i<=$('.lineItem').length; i++){
                         removeLine()
                     }
+                    //addLine needs to be here or ajax response callback will throw an out of bounds error
+                    //need to fix
                     addLine()
                 })
             }
@@ -155,25 +245,31 @@
                     }
                 });
             }
+
+            //abc is for debugging purposes. remove when complete
             var abc
             function addLine(){
                 var countDisplay = document.createElement("span")
-                countDisplay.append(count+'. ')
+                countDisplay.append(count+'.')
+                countDisplay.style= "margin-right: 0.5rem"
                 var desc = document.createElement("input")
                 desc.setAttribute('value', '')
                 desc.setAttribute('name', 'description')
                 desc.setAttribute('placeholder', 'Item description')
                 desc.setAttribute('size', '8rem')
+                desc.classList.add("input-group-text")
                 var qty = document.createElement("input")
                 qty.setAttribute('value', '')
                 qty.setAttribute('size', '1rem')
                 qty.setAttribute('name', 'quantity')
                 qty.setAttribute('placeholder', 'Qty')
+                qty.classList.add("input-group-text")
                 var price = document.createElement("input")
                 price.setAttribute('value', '')
                 price.setAttribute('size', '5rem')
                 price.setAttribute('name', 'price')
                 price.setAttribute('placeholder', 'Unit price')
+                price.classList.add("input-group-text")
                 price.addEventListener('input', function(e){
                     abc = e.target
                     console.log(abc)
@@ -188,10 +284,14 @@
                 subtotal.setAttribute('size', '5rem')
                 subtotal.setAttribute('name', 'subtotal')
                 subtotal.setAttribute('placeholder', 'Amount')
+                subtotal.classList.add("input-group-text")
                 subtotal.addEventListener('input', addTotal)
                 var newDiv = document.createElement("div")
                 newDiv.classList.add("d-flex")
                 newDiv.classList.add("flex-row")
+                newDiv.classList.add("align-items-center")
+                newDiv.classList.add("lineItem")
+                newDiv.style="margin-top: 0.5rem"
                 newDiv.appendChild(countDisplay)
                 newDiv.appendChild(desc)
                 newDiv.appendChild(qty)
@@ -210,39 +310,34 @@
 
             function addTotal(){
                 console.log('checking total')
-                let total = 0
+                let total = 0.00
+                let taxes = 0.00
                 $('input[name="subtotal"]').each(function(i,section){
                     if (section.value && !isNaN(section.value)){
                         total += parseFloat(section.value)
                     }
                 })
                 tempTotal = total //prevent multiplicative addition for the following two taxes
-                if ($('input[name="service"]')[0].classList.contains('active')){
-                    $('input[name="service"]')[0].value = (tempTotal*0.1).toFixed(2)
-                    total += (parseFloat($('input[name="service"]')[0].value))
-                } else{
-                    $('input[name="service"]')[0].value = 0.00
+                if ($('#sst')[0].classList.contains('active')){
+                    total += tempTotal * 0.06
+                    taxes += tempTotal * 0.06
                 }
-                if ($('input[name="sst"]')[0].classList.contains('active')){
-                    $('input[name="sst"]')[0].value = (tempTotal*0.06).toFixed(2)
-                    total += (parseFloat($('input[name="sst"]')[0].value))
-                } else{
-                    $('input[name="sst"]')[0].value = 0.00
+                if ($('#service')[0].classList.contains('active')){
+                    total += tempTotal* 0.1
+                    taxes += tempTotal * 0.1
                 }
                 if (!isNaN(total)){
                     $('input[name="total"]')[0].value=total.toFixed(2)
                 }
+                $('input[name="tax"]')[0].value=taxes.toFixed(2)
             }
             
             function toggleTaxes(e){
-                e.target.previousElementSibling.classList.toggle('active')
-                e.target.previousElementSibling.classList.toggle('inactive')
+                e.target.classList.toggle('active')
+                e.target.classList.toggle('inactive')
+                e.target.classList.toggle('btn-secondary')
+                e.target.classList.toggle('btn-success')
                 addTotal()
-                if (e.target.textContent == "Enable"){
-                    e.target.textContent= "Disable"
-                } else{
-                    e.target.textContent = "Enable"
-                }
             }
 
             function removeLine(){
