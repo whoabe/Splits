@@ -3,8 +3,14 @@ from models.receipt_details import Receipt_details
 from models.receipt import Receipt
 from area import Area
 from line import Line
-from helpers import RepresentsInt
+from helpers import RepresentsInt, upload_file_to_s3, detect_text_uri
 import re
+from werkzeug import secure_filename
+import cv2
+import urllib
+import numpy as np
+from config import Config
+
 
 detect_api_blueprint = Blueprint('detect_api',
                              __name__,
@@ -85,6 +91,69 @@ detect_api_blueprint = Blueprint('detect_api',
 #-------------------------------------------------#
 # next iteration
 #-------------------------------------------------#
+@detect_api_blueprint.route("/upload", methods=["POST"])
+def upload_file():
+
+	# A 
+    #  We check the request.files object for a user_file key. (user_file is the name of the file input on our form). If it’s not there, we return an error message.
+    if "user_file" not in request.files:
+        return "No file!"
+
+	# B
+    # If the key is in the object, we save it in a variable called file.
+    file    = request.files["user_file"]
+
+    """
+        These attributes are also available
+
+        file.filename               # The actual name of the file
+        file.content_type
+        file.content_length
+        file.mimetype
+
+    """
+
+	# C.
+    # We check the filename attribute on the object and if it’s empty, it means the user sumbmitted an empty form, so we return an error message.
+    if file.filename == "":
+        return "No file???!"
+
+	# D.
+    # Finally we check that there is a file and that it has an allowed filetype (this is what the allowed_file function does, you can check it out in the flask docs).
+
+    if file and 'image' in file.content_type:
+        file.filename = secure_filename(file.filename)
+        # secure_filename = Pass it a filename and it will return a secure version of it. This filename can then safely be stored on a regular file system and passed to os.path.join(). The filename returned is an ASCII only string for maximum portability.
+        # output = upload_file_to_s3(file, Config.S3_BUCKET)
+        upload_file_to_s3(file, Config.S3_BUCKET)
+        # user = current_user
+    
+        instance = Receipt(receipt_image = file.filename)
+        
+        if instance.save():
+            # have it run the google function
+            detect_text_uri(instance)
+            
+            #get original image dimensions
+            #see https://www.pyimagesearch.com/2015/03/02/convert-url-to-image-with-python-and-opencv/
+            response = urllib.request.urlopen(instance.receipt_image_url)
+            image = np.asarray(bytearray(response.read()), dtype="uint8")
+            image = cv2.imdecode(image, cv2.IMREAD_COLOR)
+            image_width, image_height = image.shape[1::-1]
+
+            instance.receipt_width=image_width
+            instance.receipt_height=image_height
+            instance.save()
+
+            # return render_template('home.html')
+            return instance.receipt_image_url
+            # have it render out somewhere else
+
+
+    else:
+        return "try again"
+        # have it render out somewhere else
+
 @detect_api_blueprint.route('/<receipt_id>', methods=['POST'])
 def index2(receipt_id):
     # takes in the click coords and receipt id and returns the text value if it exists within one of the box coords

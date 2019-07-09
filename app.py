@@ -47,7 +47,6 @@ def upload_file():
 
 	# A 
     #  We check the request.files object for a user_file key. (user_file is the name of the file input on our form). If it’s not there, we return an error message.
-
     if "user_file" not in request.files:
         flash("No file in request.files")
         return render_template('home.html')

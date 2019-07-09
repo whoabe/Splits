@@ -177,9 +177,8 @@
                 addLine()
                 //supposed to clear all lines and add one line but need to clear several times to achieve it
                 $('button[name="clear"]')[0].addEventListener('click', function(e){
-                    for (let i=0; i<=$('.lineItem').length; i++){
-                        removeLine()
-                    }
+                    $('.lineItem').remove()
+                    count = 1
                     //addLine needs to be here or ajax response callback will throw an out of bounds error
                     //need to fix
                     addLine()

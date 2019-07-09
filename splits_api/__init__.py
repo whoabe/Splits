@@ -1,7 +1,10 @@
 from app import app
 from flask_cors import CORS
 
+
+# Temporary workaround to allow React to access upload viewfunction in app.py
 cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
+# cors = CORS(app)
 
 ## API Routes ##
 from splits_api.blueprints.users.views import users_api_blueprint
