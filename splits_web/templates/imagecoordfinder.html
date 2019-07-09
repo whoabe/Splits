@@ -194,8 +194,6 @@
                 xCoordinate = parseInt(xCoordinate*'{{ receipt.receipt_width }}'/$('#pic').width())
                 yCoordinate = parseInt(yCoordinate*'{{receipt.receipt_height}}'/$('#pic').height())
 
-                var currentInput = line1.description;
-
                 $.ajax({
                     type: "POST",
                     url: "/api/v1/detect/{{receipt.id}}",

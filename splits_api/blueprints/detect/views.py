@@ -141,12 +141,10 @@ def upload_file():
             image = cv2.imdecode(image, cv2.IMREAD_COLOR)
             image_width, image_height = image.shape[1::-1]
 
-            instance.receipt_width=image_width
-            instance.receipt_height=image_height
             instance.save()
 
             # return render_template('home.html')
-            return instance.receipt_image_url
+            return jsonify({'url' : instance.receipt_image_url, 'width' : image_width, 'height': image_height, 'receiptId': instance.id})
             # have it render out somewhere else
 
 
@@ -166,7 +164,6 @@ def index2(receipt_id):
     clicked_coords = request.get_data()
     clicked_coords = clicked_coords.decode('utf-8')
     clicked_coords = clicked_coords.split(',')
-    
     clicked_coords_x = int(clicked_coords[0])
     clicked_coords_y = int(clicked_coords[1])
 
