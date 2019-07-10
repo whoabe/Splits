@@ -99,7 +99,7 @@
             #main{
                 border-radius: 2rem;
                 padding: 1rem;
-                background-color: #eedad1;
+                background-color: #52525279;
             }
 
         </style>
@@ -124,7 +124,7 @@
             <!-- Right side -->
             <div class="col-md-6 w-100 d-flex align-items-center">
                 <div class="m-0 d-flex flex-column justify-content-center align-items-center" id="main">
-                    <h2>Splits - the (hopefully) simple bill splitter!</h1>
+                    <h2>Splits - receipt table</h1>
                     <div class="float-left">
                         <p>Click the item lines on your receipt.</p>
                         <p>This site will try its best to tabulate the results below.</p>
@@ -134,32 +134,34 @@
                         </div>
                         <button type="button" id="service" class="active btn btn-success m-1">Service 10%</button>
                         <button type="button" id="sst" class="active btn btn-success m-1">SST 6%</button>
-                        <table>
-                            <div id="taxField">
-                                <tr>
-                                    <td><span>Taxes:</span></td>
-                                    <td><input disabled class="active input-group-text" name="tax" size="5rem" value="0.00" style="display: unset"></td>
-                                </tr>
-                            </div>
-                            <div id="extraField" class="d-flex flex-row">
-                                <tr>
-                                    <div class="d-flex flex-column">
-                                        <td style="text-align: right; line-height: 1rem">
-                                            <p>Grab discounts:</p>
-                                            <small>(enter the fixed amount)</small>
-                                        </td>
-                                    </div>
-                                    <!-- IMPORTANT: WORK ON THIS! -->
-                                    <td><input class="input-group-text" id="fixed" name="fixed" size="5rem" value="" placeholder="0.00"></td>
-                                </tr>
-                            </div>
-                            <div id="totalField">
-                                <tr>
-                                    <td><span>Total: </span></td>
-                                    <td><input disabled id="total" class="input-group-text" name="total" size="5rem" value="0.00" style="display: unset"></td>
-                                </tr>
-                            </div>
-                        </table>
+                        <div class="d-flex justify-content-center align-items-center">
+                            <table>
+                                <div id="taxField">
+                                    <tr>
+                                        <td><span>Taxes:</span></td>
+                                        <td><input disabled class="active input-group-text" name="tax" size="5rem" value="0.00" style="display: unset"></td>
+                                    </tr>
+                                </div>
+                                <!-- <div id="extraField" class="d-flex flex-row">
+                                    <tr>
+                                        <div class="d-flex flex-column">
+                                            <td style="text-align: right; line-height: 1rem">
+                                                <p>Grab discounts:</p>
+                                                <small>(enter the fixed amount)</small>
+                                            </td>
+                                        </div>
+                                        IMPORTANT: WORK ON THIS!
+                                        <td><input class="input-group-text" id="fixed" name="fixed" size="5rem" value="" placeholder="0.00"></td>
+                                    </tr>
+                                </div> -->
+                                <div id="totalField">
+                                    <tr>
+                                        <td><span>Total: </span></td>
+                                        <td><input disabled id="total" class="input-group-text" name="total" size="5rem" value="0.00" style="display: unset"></td>
+                                    </tr>
+                                </div>
+                            </table>
+                        </div>
                         <button type="button" id="addLineButton" class="btn btn-primary m-1">+</button>
                         <button type="button" id="undoButton" class="btn btn-primary m-1">Undo</button>
                         <button type="button" name="clear" class="btn btn-danger m-1">Clear</button>
