@@ -259,3 +259,27 @@ BR_y = 1637
 
     # takes clicked coords, runs it through the query with the receipt_id and returns the text value, else return none
     return 'not found'
+
+
+@detect_api_blueprint.route('/email', methods=['POST'])
+# takes in the emaildata from react
+def email():
+    # read the json data
+    # data = request.get_data
+    # print (request.is_json)
+    # T/F if request is json or not
+    content = request.get_json()
+    print (content)
+    '''
+    [{"name":"You/User","userId":0,"items":[]},{"name":"New Person","personId":0,"items":[{"itemId":1,"quantity":1,"description":"RC Omu Teri Chic","price":15.09},{"itemId":2,"quantity":0,"description":"Pasta Spicy Htt","price":17.92},{"itemId":3,"quantity":0,"description":"S.Pasta Sirloin","price":16.04},{"itemId":4,"quantity":0,"description":"Pasta Cream Kino","price":10.38},{"itemId":5,"quantity":1,"description":"Tea Green","price":1.13},{"itemId":6,"quantity":0,"description":"Pasta Cream Sal","price":16.98}],"subtotal":0,"tax":0,"total":0}]
+    '''
+    return 'JSON posted'
+
+    # use sendgrid api
+    # send a table through sendgrid?
+    # also need the email address that the user input in react
+    # 
+
+    # receipt = Receipt.get_by_id(receipt_id)
+    # to get the correct receipt from the database
+ 
