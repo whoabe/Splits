@@ -116,7 +116,7 @@ def upload_file():
 	# C.
     # We check the filename attribute on the object and if it’s empty, it means the user sumbmitted an empty form, so we return an error message.
     if file.filename == "":
-        return "No file???!"
+        return "No file???!" 
 
 	# D.
     # Finally we check that there is a file and that it has an allowed filetype (this is what the allowed_file function does, you can check it out in the flask docs).
