@@ -25,7 +25,7 @@ jmespath==0.9.4
 jsmin==2.2.2
 MarkupSafe==1.1.0
 numpy==1.16.4
-opencv-python==4.1.0.25
+opencv-python==3.3.0.9
 peewee==3.8.2
 peewee-db-evolve==3.7.0
 protobuf==3.8.0
